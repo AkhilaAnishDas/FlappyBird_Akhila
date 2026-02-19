@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wing It! – Flap or Fall Forever</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── THEME VARIABLES ── */
+:root {
+  --sky-top:#0d1b6e; --sky-bot:#1565c0;
+  --text:#E3F2FD; --muted:#90CAF9;
+  --gold:#FFD600; --orange:#FF8F00;
+  --card:rgba(13,71,161,0.5); --card-b:rgba(100,181,246,0.2);
+  --nav:rgba(8,18,72,0.88); --shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+[data-theme="light"] {
+  --sky-top:#64B5F6; --sky-bot:#BBDEFB;
+  --text:#0d1b6e; --muted:#1565c0;
+  --card:rgba(255,255,255,0.7); --card-b:rgba(21,101,192,0.2);
+  --nav:rgba(220,240,255,0.92); --shadow:0 8px 32px rgba(100,181,246,0.2);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Nunito',sans-serif;background:linear-gradient(180deg,var(--sky-top),var(--sky-bot));color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;width:100%;z-index:100;height:60px;background:var(--nav);backdrop-filter:blur(16px);border-bottom:1px solid var(--card-b);display:flex;align-items:center;justify-content:space-between;padding:0 5vw}
+.logo{font-family:'Fredoka One',cursive;font-size:1.5rem;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:8px}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nav-links a{color:var(--muted);text-decoration:none;font-weight:700;font-size:.85rem;padding:6px 12px;border-radius:24px;transition:.2s}
+.nav-links a:hover{background:var(--card);color:var(--gold)}
+.play-btn{background:var(--gold);color:#0d1b6e;font-family:'Fredoka One',cursive;font-size:.95rem;padding:8px 22px;border-radius:24px;text-decoration:none;transition:.2s;margin-left:4px}
+.play-btn:hover{background:var(--orange);color:#fff;transform:translateY(-1px)}
+#themeBtn{background:var(--card);border:1px solid var(--card-b);border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;transition:.2s;color:var(--gold)}
+#themeBtn:hover{transform:scale(1.1)}
+
+/* ── SECTIONS ── */
+section{padding:100px 5vw 80px;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#home{background:linear-gradient(180deg,var(--sky-top),var(--sky-bot));position:relative;overflow:hidden}
+.section-tag{font-size:.72rem;letter-spacing:4px;text-transform:uppercase;color:var(--orange);font-weight:800;margin-bottom:8px}
+.section-title{font-family:'Fredoka One',cursive;font-size:clamp(2rem,5vw,3rem);color:var(--gold);margin-bottom:14px;line-height:1.1}
+.section-sub{color:var(--muted);font-size:.95rem;line-height:1.8;max-width:520px}
+
+/* ── HERO ── */
+.hero-content{display:flex;flex-direction:column;align-items:center;gap:16px;z-index:2;text-align:center}
+.hero-title{font-family:'Fredoka One',cursive;font-size:clamp(4rem,11vw,7.5rem);color:var(--gold);text-shadow:0 4px 0 var(--orange),0 8px 30px rgba(255,143,0,.4);line-height:1;letter-spacing:2px}
+.hero-tag{font-size:clamp(.8rem,2vw,1.1rem);color:var(--muted);font-weight:800;letter-spacing:4px;text-transform:uppercase}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.btn{display:inline-flex;align-items:center;gap:6px;font-family:'Fredoka One',cursive;font-size:1.05rem;padding:13px 30px;border-radius:50px;border:none;cursor:pointer;transition:.22s;text-decoration:none}
+.btn-gold{background:var(--gold);color:#0d1b6e;box-shadow:0 4px 0 var(--orange)}
+.btn-gold:hover{background:var(--orange);color:#fff;transform:translateY(-2px)}
+.btn-out{background:transparent;color:var(--text);border:2px solid var(--card-b)}
+.btn-out:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+#heroSvgBird{animation:bob 1.8s ease-in-out infinite alternate;filter:drop-shadow(0 8px 24px rgba(255,214,0,.45))}
+@keyframes bob{from{transform:translateY(0) rotate(-6deg)}to{transform:translateY(-20px) rotate(5deg)}}
+.cloud{position:absolute;opacity:.55;animation:drift linear infinite}
+@keyframes drift{from{transform:translateX(-220px)}to{transform:translateX(calc(100vw + 220px))}}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.1}to{opacity:.9}}
+.scroll-hint{position:absolute;bottom:28px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--muted);font-size:.7rem;letter-spacing:2px;text-transform:uppercase;animation:bounce 1.6s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+
+/* ── ABOUT ── */
+#about{background:linear-gradient(180deg,var(--sky-bot),var(--sky-top));padding-top:80px}
+.about-wrap{max-width:1080px;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.mini-cards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:24px}
+.mini-card{background:var(--card);border:1px solid var(--card-b);border-radius:18px;padding:20px;backdrop-filter:blur(10px);transition:.2s}
+.mini-card:hover{transform:translateY(-4px);border-color:var(--gold)}
+.mini-card h4{font-family:'Fredoka One',cursive;color:var(--gold);margin:10px 0 4px;font-size:1rem}
+.mini-card p{font-size:.82rem;color:var(--muted);line-height:1.6}
+.stat-row{display:flex;gap:28px;margin-top:22px;flex-wrap:wrap}
+.stat{text-align:center}
+.stat-num{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--gold)}
+.stat-label{font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+
+/* ── HOW TO PLAY ── */
+#howtoplay{background:linear-gradient(180deg,var(--sky-top),var(--sky-bot))}
+.controls-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:16px;max-width:900px;width:100%;margin-top:36px}
+.ctrl-card{background:var(--card);border:1px solid var(--card-b);border-radius:18px;padding:24px;text-align:center;backdrop-filter:blur(10px);transition:.2s}
+.ctrl-card:hover{transform:translateY(-4px) scale(1.02);border-color:var(--gold)}
+.ctrl-emoji{font-size:2.2rem;margin-bottom:10px}
+.ctrl-card h3{font-family:'Fredoka One',cursive;color:var(--gold);font-size:1rem;margin-bottom:6px}
+.ctrl-card p{font-size:.8rem;color:var(--muted);line-height:1.6}
+
+/* ── GAME ── */
+#game{background:linear-gradient(180deg,var(--sky-bot),var(--sky-top));gap:16px}
+#gameArea{position:relative;width:360px;height:560px;border-radius:20px;overflow:hidden;border:3px solid var(--card-b);box-shadow:var(--shadow);cursor:pointer;-webkit-user-select:none;user-select:none;flex-shrink:0}
+#gameSvg{width:100%;height:100%;display:block}
+.g-screen{position:absolute;inset:0;background:rgba(5,10,45,.88);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border-radius:17px;padding:24px}
+.g-screen h2{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--gold);text-align:center;text-shadow:0 3px 0 var(--orange)}
+.g-screen p{color:var(--muted);font-size:.85rem;text-align:center;line-height:1.6}
+.g-btn{background:var(--gold);color:#0d1b6e;border:none;border-radius:50px;font-family:'Fredoka One',cursive;font-size:1.1rem;padding:11px 32px;cursor:pointer;transition:.2s;box-shadow:0 4px 0 var(--orange)}
+.g-btn:hover{background:var(--orange);color:#fff;transform:translateY(-2px)}
+.g-score-big{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#fff}
+.g-best{font-size:.8rem;color:var(--muted)}
+.medal-big{font-size:3rem;animation:popIn .4s cubic-bezier(.4,0,.2,1)}
+@keyframes popIn{from{transform:scale(0) rotate(-20deg)}to{transform:scale(1) rotate(0)}}
+.hidden{display:none!important}
+.live-score{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-family:'Fredoka One',cursive;font-size:2.6rem;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.35),0 0 16px rgba(255,214,0,.5);pointer-events:none;z-index:10;letter-spacing:2px}
+
+/* ── SCOREBOARD ── */
+#scoreboard{background:linear-gradient(180deg,var(--sky-top),var(--sky-bot))}
+.sb-wrap{max-width:580px;width:100%;margin-top:28px;background:var(--card);border:1px solid var(--card-b);border-radius:20px;overflow:hidden;backdrop-filter:blur(12px)}
+.sb-head{display:grid;grid-template-columns:52px 1fr 90px 90px;padding:12px 18px;background:rgba(255,214,0,.12);font-family:'Fredoka One',cursive;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--gold);border-bottom:1px solid var(--card-b)}
+.sb-row{display:grid;grid-template-columns:52px 1fr 90px 90px;padding:13px 18px;border-bottom:1px solid var(--card-b);align-items:center;transition:.18s}
+.sb-row:last-child{border-bottom:none}
+.sb-row:hover{background:rgba(255,214,0,.06)}
+.sb-rank{font-family:'Fredoka One',cursive;font-size:1.15rem}
+.r1{color:#FFD700}.r2{color:#C0C0C0}.r3{color:#CD7F32}
+.sb-score{font-family:'Fredoka One',cursive;color:var(--gold);font-size:1.05rem}
+.sb-date{font-size:.75rem;color:var(--muted)}
+.no-scores{text-align:center;padding:36px;color:var(--muted);font-size:.9rem}
+.clear-btn{margin-top:14px;background:transparent;border:1px solid var(--card-b);color:var(--muted);padding:7px 18px;border-radius:50px;cursor:pointer;font-size:.78rem;transition:.2s}
+.clear-btn:hover{border-color:#f44336;color:#f44336}
+
+/* ── HISTORY ── */
+#history{background:linear-gradient(180deg,var(--sky-bot),var(--sky-top))}
+.hist-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;max-width:1060px;width:100%;margin-top:36px}
+.hist-card{background:var(--card);border:1px solid var(--card-b);border-radius:22px;padding:34px;backdrop-filter:blur(12px)}
+.hist-card h3{font-family:'Fredoka One',cursive;color:var(--gold);font-size:1.35rem;margin-bottom:14px}
+.hist-card p{color:var(--muted);font-size:.88rem;line-height:1.8;margin-bottom:10px}
+.tag{display:inline-block;background:rgba(255,214,0,.12);border:1px solid rgba(255,214,0,.25);color:var(--gold);font-size:.7rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:3px 11px;border-radius:50px;margin:3px}
+.avatar{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));display:flex;align-items:center;justify-content:center;font-family:'Fredoka One',cursive;font-size:1.8rem;color:#0d1b6e;margin-bottom:14px}
+.team-names{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.team-tag{background:rgba(255,214,0,.15);border:1px solid rgba(255,214,0,.3);color:var(--gold);font-size:.78rem;font-weight:800;padding:5px 14px;border-radius:50px}
+
+/* ── FOOTER ── */
+footer{background:var(--nav);border-top:1px solid var(--card-b);text-align:center;padding:28px 20px;font-size:.82rem;color:var(--muted)}
+footer strong{color:var(--gold)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){.about-wrap,.hist-grid{grid-template-columns:1fr}.mini-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:540px){.nav-links a{display:none}.mini-cards{grid-template-columns:1fr}.sb-head,.sb-row{grid-template-columns:44px 1fr 72px}.sb-date{display:none}#gameArea{width:300px;height:480px}}
+
+.fi{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.fi.vis{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══ -->
+<nav>
+  <a href="#home" class="logo">
+    <svg width="30" height="26" viewBox="0 0 60 52" fill="none">
+      <ellipse cx="32" cy="30" rx="22" ry="18" fill="#FFD600"/>
+      <ellipse cx="32" cy="36" rx="16" ry="11" fill="#FF8F00" opacity=".6"/>
+      <circle cx="40" cy="23" r="8" fill="white"/>
+      <circle cx="41.5" cy="23" r="5" fill="#0d1b6e"/>
+      <circle cx="43" cy="21.5" r="1.6" fill="white"/>
+      <path d="M48 28 Q58 25 59 30 Q54 33 48 31Z" fill="#FF8F00"/>
+      <path d="M14 24 Q4 16 5 8 Q16 18 18 26Z" fill="#FF8F00"/>
+    </svg>
+    Wing It!
+  </a>
+  <div class="nav-links">
+    <a href="#home">Home</a>
+    <a href="#about">About</a>
+    <a href="#howtoplay">Controls</a>
+    <a href="#game">Play</a>
+    <a href="#scoreboard">Scores</a>
+    <a href="#history">History</a>
+    <a href="#game" class="play-btn">▶ Play</a>
+    <button id="themeBtn" onclick="toggleTheme()" title="Toggle theme">☀️</button>
+  </div>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<section id="home">
+  <div id="skyBg" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+
+  <div class="hero-content">
+    <!-- Hero Bird SVG -->
+    <svg id="heroSvgBird" width="160" height="130" viewBox="0 0 160 130" fill="none">
+      <defs>
+        <linearGradient id="hbg" x1="30" y1="28" x2="128" y2="108" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stop-color="#FFE57F"/>
+          <stop offset="1" stop-color="#FF8F00"/>
+        </linearGradient>
+      </defs>
+      <!-- shadow -->
+      <ellipse cx="80" cy="122" rx="38" ry="8" fill="rgba(0,0,0,.18)"/>
+      <!-- wing -->
+      <path d="M34 62 Q10 44 12 26 Q32 50 44 66Z" fill="#FFB300"/>
+      <path d="M34 62 Q6 52 4 32 Q28 50 42 66Z" fill="#FF8F00" opacity=".8"/>
+      <!-- body -->
+      <ellipse cx="80" cy="68" rx="50" ry="42" fill="url(#hbg)"/>
+      <!-- belly -->
+      <ellipse cx="82" cy="82" rx="36" ry="26" fill="#FFB300" opacity=".6"/>
+      <!-- eye white -->
+      <circle cx="100" cy="56" r="18" fill="white"/>
+      <!-- pupil -->
+      <circle cx="102" cy="56" r="11" fill="#0d1b6e"/>
+      <!-- shine -->
+      <circle cx="105" cy="52" r="4" fill="white"/>
+      <!-- beak -->
+      <path d="M118 65 Q138 60 140 68 Q132 74 118 71Z" fill="#FF8F00"/>
+      <line x1="118" y1="68" x2="138" y2="64" stroke="#E65100" stroke-width="1.5"/>
+      <!-- tail -->
+      <path d="M34 82 Q8 86 6 72 Q20 74 32 80Z" fill="#FF8F00"/>
+      <!-- feet -->
+      <path d="M68 108 L64 118 L58 122 M68 108 L66 120 L72 122" stroke="#FF8F00" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+
+    <h1 class="hero-title">Wing It!</h1>
+    <p class="hero-tag">✦ Flap or Fall Forever ✦</p>
+    <div class="hero-btns">
+      <a href="#game" class="btn btn-gold">▶ &nbsp;Play Now</a>
+      <a href="#howtoplay" class="btn btn-out">How to Play</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 2v14M4 12l5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Scroll
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══ -->
+<section id="about">
+  <div class="about-wrap">
+    <div class="fi">
+      <div class="section-tag">About the Game</div>
+      <h2 class="section-title">What is Wing It?</h2>
+      <p class="section-sub">Wing It! is a love letter to classic one-tap arcade gaming. Guide your plucky golden bird through an endless gauntlet of pipes — simple to learn, brutally hard to master.</p>
+      <p class="section-sub" style="margin-top:12px">Pure reflex. Pure joy. No installs, no accounts. Just open the page and flap.</p>
+      <div class="stat-row">
+        <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Endless</div></div>
+        <div class="stat"><div class="stat-num">1</div><div class="stat-label">Button</div></div>
+        <div class="stat"><div class="stat-num">💛</div><div class="stat-label">Pure Fun</div></div>
+      </div>
+    </div>
+    <div class="mini-cards fi">
+      <div class="mini-card">
+        <!-- SVG icon: wave/tap -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="13" fill="rgba(255,214,0,.15)"/>
+          <path d="M10 20 Q16 8 22 20" stroke="#FFD600" stroke-width="2.3" stroke-linecap="round"/>
+          <circle cx="16" cy="12" r="2.8" fill="#FFD600"/>
+        </svg>
+        <h4>One-Tap Fun</h4>
+        <p>Click, tap, or spacebar. Deceptively simple, brutally addictive.</p>
+      </div>
+      <div class="mini-card">
+        <!-- SVG icon: pipes -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="13" fill="rgba(255,214,0,.15)"/>
+          <rect x="10" y="4" width="5" height="10" rx="1.5" fill="#FFD600"/>
+          <rect x="8" y="12" width="9" height="3" rx="1" fill="#FFD600"/>
+          <rect x="10" y="18" width="5" height="10" rx="1.5" fill="#FFD600" opacity=".6"/>
+          <rect x="8" y="17" width="9" height="3" rx="1" fill="#FFD600" opacity=".6"/>
+          <path d="M19 16 Q23 12 23 16 Q23 20 19 16Z" fill="#FFD600"/>
+        </svg>
+        <h4>Dynamic Pipes</h4>
+        <p>Gaps vary each run. Speed ramps up the higher you score.</p>
+      </div>
+      <div class="mini-card">
+        <!-- SVG icon: star/medal -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="13" fill="rgba(255,214,0,.15)"/>
+          <path d="M16 7 L17.8 13 L24 13 L19 17 L21 23 L16 19.5 L11 23 L13 17 L8 13 L14.2 13Z" fill="#FFD600"/>
+        </svg>
+        <h4>Medals & Ranks</h4>
+        <p>Earn Bronze, Silver, Gold, and Platinum medals by score.</p>
+      </div>
+      <div class="mini-card">
+        <!-- SVG icon: calendar/save -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="13" fill="rgba(255,214,0,.15)"/>
+          <rect x="8" y="11" width="16" height="12" rx="2.5" stroke="#FFD600" stroke-width="2"/>
+          <path d="M11 11V9 M21 11V9" stroke="#FFD600" stroke-width="2" stroke-linecap="round"/>
+          <rect x="12" y="15" width="8" height="2" rx="1" fill="#FFD600"/>
+        </svg>
+        <h4>Saved Scores</h4>
+        <p>Your top 10 best runs are saved locally in your browser.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ HOW TO PLAY ═══ -->
+<section id="howtoplay">
+  <div style="text-align:center" class="fi">
+    <div class="section-tag">Controls & Rules</div>
+    <h2 class="section-title">How to Play</h2>
+    <p class="section-sub" style="margin:0 auto">Seconds to learn. A lifetime to master.</p>
+  </div>
+  <div class="controls-grid">
+    <div class="ctrl-card fi"><div class="ctrl-emoji">🖱️</div><h3>Click / Tap</h3><p>Click the game area or tap on mobile to make the bird flap and rise.</p></div>
+    <div class="ctrl-card fi"><div class="ctrl-emoji">⌨️</div><h3>Spacebar</h3><p>Press Space on desktop for that classic arcade flapping feel.</p></div>
+    <div class="ctrl-card fi"><div class="ctrl-emoji">🏆</div><h3>Score Points</h3><p>Each pipe pair you pass through earns you 1 point. Keep going!</p></div>
+    <div class="ctrl-card fi"><div class="ctrl-emoji">⚠️</div><h3>Avoid Everything</h3><p>Don't hit the pipes, the ground, or fly off the top. It's game over!</p></div>
+    <div class="ctrl-card fi"><div class="ctrl-emoji">📈</div><h3>Speed Ramps Up</h3><p>The game gets faster the higher your score. Stay focused and rhythmic!</p></div>
+    <div class="ctrl-card fi"><div class="ctrl-emoji">🔁</div><h3>Instant Restart</h3><p>Died? Click, tap, or press Space to jump right back in immediately.</p></div>
+  </div>
+</section>
+
+<!-- ═══ GAME ═══ -->
+<section id="game">
+  <div style="text-align:center" class="fi">
+    <div class="section-tag">Play Right Here</div>
+    <h2 class="section-title">Start Playing</h2>
+  </div>
+
+  <div id="gameArea" onclick="handleFlap()">
+    <!-- ═══ SVG GAME WORLD ═══ -->
+    <svg id="gameSvg" viewBox="0 0 360 560" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop id="sg0" offset="0" stop-color="#0d1b6e"/>
+          <stop id="sg1" offset="1" stop-color="#1565c0"/>
+        </linearGradient>
+        <!-- Pipe gradients -->
+        <linearGradient id="pipeGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#2E7D32"/>
+          <stop offset=".35" stop-color="#4CAF50"/>
+          <stop offset=".6" stop-color="#81C784"/>
+          <stop offset="1" stop-color="#1B5E20"/>
+        </linearGradient>
+        <linearGradient id="capGrad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#1B5E20"/>
+          <stop offset=".4" stop-color="#66BB6A"/>
+          <stop offset=".7" stop-color="#A5D6A7"/>
+          <stop offset="1" stop-color="#1B5E20"/>
+        </linearGradient>
+        <!-- Ground gradient -->
+        <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#C8A23A"/>
+          <stop offset=".2" stop-color="#8B6914"/>
+          <stop offset="1" stop-color="#5D4309"/>
+        </linearGradient>
+        <!-- Bird body gradient -->
+        <linearGradient id="birdBodyGrad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#FFE57F"/>
+          <stop offset="1" stop-color="#FF8F00"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Sky -->
+      <rect width="360" height="490" fill="url(#skyGrad)"/>
+
+      <!-- Stars (dark mode only) -->
+      <g id="starsG">
+        <circle cx="28"  cy="22"  r="1.2" fill="white" opacity=".8"/>
+        <circle cx="88"  cy="14"  r="1"   fill="white" opacity=".6"/>
+        <circle cx="158" cy="36"  r="1.4" fill="white" opacity=".9"/>
+        <circle cx="228" cy="18"  r="1"   fill="white" opacity=".7"/>
+        <circle cx="298" cy="28"  r="1.2" fill="white" opacity=".5"/>
+        <circle cx="348" cy="11"  r="1"   fill="white" opacity=".8"/>
+        <circle cx="54"  cy="58"  r=".9"  fill="white" opacity=".7"/>
+        <circle cx="199" cy="54"  r="1.3" fill="white" opacity=".6"/>
+        <circle cx="278" cy="48"  r="1"   fill="white" opacity=".8"/>
+        <circle cx="128" cy="72"  r=".8"  fill="white" opacity=".5"/>
+        <circle cx="338" cy="64"  r="1.1" fill="white" opacity=".7"/>
+      </g>
+
+      <!-- SVG Clouds (scrolled by JS) -->
+      <g id="cloud1" transform="translate(40,55)">
+        <ellipse cx="0"  cy="0" rx="30" ry="13" fill="white" opacity=".16"/>
+        <ellipse cx="26" cy="-8" rx="20" ry="10" fill="white" opacity=".16"/>
+        <ellipse cx="50" cy="0" rx="26" ry="12" fill="white" opacity=".16"/>
+        <ellipse cx="74" cy="-4" rx="18" ry="9" fill="white" opacity=".16"/>
+      </g>
+      <g id="cloud2" transform="translate(230,88)">
+        <ellipse cx="0"  cy="0" rx="24" ry="10" fill="white" opacity=".13"/>
+        <ellipse cx="20" cy="-6" rx="17" ry="9"  fill="white" opacity=".13"/>
+        <ellipse cx="38" cy="0"  rx="20" ry="9"  fill="white" opacity=".13"/>
+      </g>
+      <g id="cloud3" transform="translate(140,36)">
+        <ellipse cx="0"  cy="0" rx="18" ry="8" fill="white" opacity=".11"/>
+        <ellipse cx="16" cy="-5" rx="14" ry="7" fill="white" opacity=".11"/>
+        <ellipse cx="30" cy="0" rx="16" ry="7" fill="white" opacity=".11"/>
+      </g>
+
+      <!-- Pipes container (JS writes pipe SVGs here) -->
+      <g id="pipesG"></g>
+
+      <!-- Ground -->
+      <rect x="0" y="490" width="360" height="70" fill="url(#groundGrad)"/>
+      <!-- Grass -->
+      <rect x="0" y="490" width="360" height="11" fill="#43A047"/>
+      <rect x="0" y="490" width="360" height="4"  fill="#66BB6A"/>
+      <!-- Subtle stripe pattern on dirt -->
+      <g opacity=".07">
+        <rect x="0"   y="501" width="18" height="59" fill="#000"/>
+        <rect x="30"  y="501" width="18" height="59" fill="#000"/>
+        <rect x="60"  y="501" width="18" height="59" fill="#000"/>
+        <rect x="90"  y="501" width="18" height="59" fill="#000"/>
+        <rect x="120" y="501" width="18" height="59" fill="#000"/>
+        <rect x="150" y="501" width="18" height="59" fill="#000"/>
+        <rect x="180" y="501" width="18" height="59" fill="#000"/>
+        <rect x="210" y="501" width="18" height="59" fill="#000"/>
+        <rect x="240" y="501" width="18" height="59" fill="#000"/>
+        <rect x="270" y="501" width="18" height="59" fill="#000"/>
+        <rect x="300" y="501" width="18" height="59" fill="#000"/>
+        <rect x="330" y="501" width="18" height="59" fill="#000"/>
+      </g>
+
+      <!-- ═══ BIRD (fully SVG, moved by JS transform) ═══ -->
+      <g id="birdG" transform="translate(90,280)">
+        <!-- drop shadow -->
+        <ellipse cx="0" cy="44" rx="19" ry="6" fill="rgba(0,0,0,.2)"/>
+        <!-- back wing -->
+        <path id="birdWing" d="M-16,-2 Q-32,-14 -30,-26 Q-14,-8 -10,4Z" fill="#FF8F00"/>
+        <path            d="M-16,-2 Q-36,-10 -36,-22 Q-16,-6 -10,4Z"    fill="#FFB300" opacity=".65"/>
+        <!-- body -->
+        <ellipse cx="0" cy="0" rx="22" ry="19" fill="url(#birdBodyGrad)"/>
+        <!-- belly -->
+        <ellipse cx="2" cy="8" rx="15" ry="11" fill="#FFB300" opacity=".55"/>
+        <!-- eye white -->
+        <circle cx="10" cy="-6" r="9" fill="white"/>
+        <!-- pupil -->
+        <circle cx="11.5" cy="-6" r="5.5" fill="#0d1b6e"/>
+        <!-- shine -->
+        <circle cx="13.5" cy="-8.5" r="2" fill="white"/>
+        <!-- beak -->
+        <path d="M18,1 Q30,-2 31,3 Q26,7 18,5Z" fill="#FF8F00"/>
+        <line x1="18" y1="3" x2="30" y2="1" stroke="#E65100" stroke-width="1"/>
+        <!-- tail -->
+        <path d="M-18,8 Q-32,10 -30,2 Q-22,4 -18,8Z" fill="#FF8F00"/>
+      </g>
+    </svg><!-- end gameSvg -->
+
+    <!-- Live score (shown during play) -->
+    <div class="live-score hidden" id="liveScore">0</div>
+
+    <!-- START SCREEN -->
+    <div class="g-screen" id="startScreen">
+      <!-- Small bird SVG for screen -->
+      <svg width="72" height="58" viewBox="0 0 160 130" fill="none">
+        <defs>
+          <linearGradient id="hbg2" x1="30" y1="28" x2="128" y2="108" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#FFE57F"/>
+            <stop offset="1" stop-color="#FF8F00"/>
+          </linearGradient>
+        </defs>
+        <path d="M34 62 Q10 44 12 26 Q32 50 44 66Z" fill="#FFB300"/>
+        <ellipse cx="80" cy="68" rx="50" ry="42" fill="url(#hbg2)"/>
+        <ellipse cx="82" cy="82" rx="36" ry="26" fill="#FFB300" opacity=".6"/>
+        <circle cx="100" cy="56" r="18" fill="white"/>
+        <circle cx="102" cy="56" r="11" fill="#0d1b6e"/>
+        <circle cx="105" cy="52" r="4" fill="white"/>
+        <path d="M118 65 Q138 60 140 68 Q132 74 118 71Z" fill="#FF8F00"/>
+      </svg>
+      <h2>Wing It!</h2>
+      <p style="font-size:.7rem;letter-spacing:3px;text-transform:uppercase;color:#FF8F00">Flap or Fall Forever</p>
+      <p>Click, Tap, or press <strong style="color:#FFD600">Space</strong> to begin</p>
+      <button class="g-btn" onclick="event.stopPropagation();startGame()">▶ Start Game</button>
+      <div class="g-best">Best: <span id="startBest">0</span></div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div class="g-screen hidden" id="gameOverScreen">
+      <h2>Game Over!</h2>
+      <div class="medal-big" id="medalEl">🏅</div>
+      <div class="g-score-big">Score: <span id="finalScore">0</span></div>
+      <div class="g-best">Best: <span id="finalBest">0</span></div>
+      <button class="g-btn" onclick="event.stopPropagation();restartGame()">🔁 Restart</button>
+    </div>
+  </div><!-- end gameArea -->
+
+  <p style="margin-top:12px;font-size:.75rem;color:var(--muted);letter-spacing:2px;text-transform:uppercase">Space · Click · Tap to Flap</p>
+</section>
+
+<!-- ═══ SCOREBOARD ═══ -->
+<section id="scoreboard">
+  <div style="text-align:center" class="fi">
+    <div class="section-tag">Hall of Fame</div>
+    <h2 class="section-title">Scoreboard</h2>
+    <p class="section-sub" style="margin:0 auto">Your personal best scores, saved in your browser.</p>
+  </div>
+  <div class="sb-wrap fi">
+    <div class="sb-head"><span>#</span><span>Player</span><span>Score</span><span>Date</span></div>
+    <div id="sbBody"><div class="no-scores">No scores yet — play to make history! 🐦</div></div>
+  </div>
+  <button class="clear-btn" onclick="clearScores()">🗑 Clear All Scores</button>
+</section>
+
+<!-- ═══ HISTORY ═══ -->
+<section id="history">
+  <div style="text-align:center" class="fi">
+    <div class="section-tag">Origin Story & Team</div>
+    <h2 class="section-title">History & Creators</h2>
+  </div>
+  <div class="hist-grid">
+    <div class="hist-card fi">
+      <h3>📖 The Original Legend</h3>
+      <p>Flappy Bird was created by <strong style="color:var(--gold)">Nguyễn Hà Đông</strong>, a Vietnamese indie developer, in 2013. It became a global phenomenon by early 2014 — simultaneously topping iOS and Android charts worldwide.</p>
+      <p>At its peak, the game earned around <strong style="color:var(--gold)">$50,000 per day</strong> in ad revenue. On February 10, 2014, Đông removed it from all app stores, citing concern about how addictive it had become — turning it into an instant legend.</p>
+      <p>It remains one of the most culturally significant mobile games ever made, inspiring thousands of tributes and an entire genre of one-tap games.</p>
+      <div style="margin-top:12px"><span class="tag">2013</span><span class="tag">iOS</span><span class="tag">Android</span><span class="tag">Viral</span><span class="tag">Indie</span></div>
+    </div>
+    <div class="hist-card fi">
+      <div class="avatar">W</div>
+      <h3>⚡ Wing It! — Built By</h3>
+      <p><strong style="color:var(--gold)">Wing It!</strong> is a faithful web tribute to Flappy Bird — rebuilt with pure HTML5, SVG graphics (no canvas!), Web Audio API sounds, local score saving, dark/light mode, dynamic difficulty, and medal awards.</p>
+      <p>No installs. No downloads. No accounts needed. Open the page and flap your way to glory.</p>
+      <div><span class="tag">HTML5</span><span class="tag">SVG</span><span class="tag">Web Audio</span><span class="tag">Vanilla JS</span></div>
+      <div class="team-names">
+        <span class="team-tag">👤 Akhila</span>
+        <span class="team-tag">👤 Jaspreet</span>
+        <span class="team-tag">👤 Lokendra</span>
+        <span class="team-tag">👤 Bhaumik</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div style="margin-bottom:8px;font-family:'Fredoka One',cursive;font-size:1.2rem;color:var(--gold)">
+    Wing It! &nbsp;–&nbsp; Flap or Fall Forever
+  </div>
+  Built by <strong>Akhila · Jaspreet · Lokendra · Bhaumik</strong> &nbsp;·&nbsp; © 2026 Wing It!
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT — SVG GAME ENGINE (no canvas)
+═══════════════════════════════════════════ -->
+<script>
+/* ────────────────────────────────
+   THEME TOGGLE
+──────────────────────────────── */
+let dark = true;
+function toggleTheme() {
+  dark = !dark;
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  document.getElementById('themeBtn').textContent = dark ? '☀️' : '🌙';
+  // Update SVG sky gradient
+  document.getElementById('sg0').setAttribute('stop-color', dark ? '#0d1b6e' : '#64B5F6');
+  document.getElementById('sg1').setAttribute('stop-color', dark ? '#1565c0' : '#BBDEFB');
+  // Hide stars in light mode
+  document.getElementById('starsG').style.opacity = dark ? '1' : '0';
+}
+
+/* ────────────────────────────────
+   SCROLL FADE-IN
+──────────────────────────────── */
+document.querySelectorAll('.fi').forEach(el => {
+  new IntersectionObserver(([e]) => {
+    if (e.isIntersecting) e.target.classList.add('vis');
+  }, { threshold: 0.12 }).observe(el);
+});
+
+/* ────────────────────────────────
+   HERO BACKGROUND (landing clouds + stars)
+──────────────────────────────── */
+(function () {
+  const sky = document.getElementById('skyBg');
+  const cloudPath = 'M0,22 Q18,6 38,14 Q52,4 68,12 Q84,6 96,14 Q100,24 84,26 Q68,32 50,28 Q32,34 16,28Z';
+  for (let i = 0; i < 6; i++) {
+    const d = document.createElement('div');
+    d.className = 'cloud';
+    const w = 90 + Math.random() * 110;
+    d.style.top = (4 + Math.random() * 38) + '%';
+    d.style.left = (Math.random() * 100) + '%';
+    d.style.animationDuration = (18 + Math.random() * 18) + 's';
+    d.style.animationDelay = -(Math.random() * 30) + 's';
+    d.innerHTML = `<svg width="${w}" height="${w * 0.3}" viewBox="0 0 100 30"><path d="${cloudPath}" fill="white"/></svg>`;
+    sky.appendChild(d);
+  }
+  for (let i = 0; i < 55; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = 1 + Math.random() * 2;
+    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-duration:${1.4+Math.random()*2}s;animation-delay:${Math.random()*2}s`;
+    sky.appendChild(s);
+  }
+})();
+
+/* ────────────────────────────────
+   AUDIO ENGINE
+──────────────────────────────── */
+let AC = null;
+function ac() { if (!AC) AC = new (window.AudioContext || window.webkitAudioContext)(); return AC; }
+
+function playFlap() {
+  try {
+    const c = ac(), o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type = 'sine';
+    o.frequency.setValueAtTime(580, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(260, c.currentTime + 0.13);
+    g.gain.setValueAtTime(0.22, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.15);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.15);
+  } catch (e) {}
+}
+
+function playPoint() {
+  try {
+    const c = ac();
+    [523, 659, 784].forEach((f, i) => {
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.type = 'triangle'; o.frequency.value = f;
+      const t = c.currentTime + i * 0.09;
+      g.gain.setValueAtTime(0.18, t);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+      o.start(t); o.stop(t + 0.2);
+    });
+  } catch (e) {}
+}
+
+function playDead() {
+  try {
+    const c = ac(), o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(280, c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(40, c.currentTime + 0.45);
+    g.gain.setValueAtTime(0.28, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.45);
+    o.start(c.currentTime); o.stop(c.currentTime + 0.45);
+  } catch (e) {}
+}
+
+/* ────────────────────────────────
+   GAME CONSTANTS
+──────────────────────────────── */
+const GW = 360, GH = 560;
+const GROUND_Y  = 490;   // top of ground
+const PIPE_W    = 52;    // pipe body width
+const PIPE_GAP  = 150;   // gap between top & bottom pipe
+const CAP_H     = 24;    // pipe cap height
+const CAP_EXTRA = 8;     // cap overhang each side
+const GRAVITY   = 0.30;
+const FLAP_V    = -6.5;
+const BIRD_R    = 18;    // collision radius
+const BIRD_X    = 90;    // bird fixed x position
+
+/* ────────────────────────────────
+   GAME STATE
+──────────────────────────────── */
+let state = 'start';  // 'start' | 'playing' | 'dead'
+let by = 270, bvy = 0, brot = 0;   // bird y, velocity, rotation (degrees)
+let pipes = [];                     // [{x, topH, scored}]
+let score = 0, best = 0;
+let speed = 2.2, pipeTimer = 0;
+let wingT = 0;                      // wing animation timer
+let raf = null;
+
+/* DOM refs */
+const birdG    = document.getElementById('birdG');
+const birdWing = document.getElementById('birdWing');
+const pipesG   = document.getElementById('pipesG');
+const liveScore= document.getElementById('liveScore');
+const cloud1   = document.getElementById('cloud1');
+const cloud2   = document.getElementById('cloud2');
+const cloud3   = document.getElementById('cloud3');
+
+/* Cloud scroll positions */
+let cx1 = 40, cx2 = 230, cx3 = 140;
+
+/* ────────────────────────────────
+   SVG HELPERS
+──────────────────────────────── */
+// Move & rotate the bird SVG group
+function positionBird(y, rotDeg, wingOffset) {
+  birdG.setAttribute('transform', `translate(${BIRD_X},${y}) rotate(${rotDeg})`);
+  // Animate wing: shift the control point of the quadratic curve
+  const wy = -14 + wingOffset;
+  birdWing.setAttribute('d', `M-16,-2 Q-32,${wy} -30,${wy - 12} Q-14,-8 -10,4Z`);
+}
+
+// Build one pipe pair as SVG markup
+function pipeSvg(px, topH) {
+  const botY = topH + PIPE_GAP;
+  const botH = GROUND_Y - botY;
+  const cx = px - CAP_EXTRA;        // cap left edge
+  const cw = PIPE_W + CAP_EXTRA * 2; // cap total width
+  const bx = px + 6;                // body left edge (inset)
+  const bw = PIPE_W - 12;           // body width
+  return `<g>
+    <!-- top pipe body -->
+    <rect x="${bx}" y="0" width="${bw}" height="${topH - CAP_H}" rx="4" fill="url(#pipeGrad)"/>
+    <rect x="${bx + 2}" y="0" width="8" height="${topH - CAP_H}" rx="2" fill="rgba(255,255,255,.1)"/>
+    <!-- top pipe cap -->
+    <rect x="${cx}" y="${topH - CAP_H}" width="${cw}" height="${CAP_H}" rx="5" fill="url(#capGrad)"/>
+    <rect x="${px}" y="${topH - CAP_H + 4}" width="11" height="${CAP_H - 8}" rx="2" fill="rgba(255,255,255,.16)"/>
+    <!-- bottom pipe cap -->
+    <rect x="${cx}" y="${botY}" width="${cw}" height="${CAP_H}" rx="5" fill="url(#capGrad)"/>
+    <rect x="${px}" y="${botY + 4}" width="11" height="${CAP_H - 8}" rx="2" fill="rgba(255,255,255,.16)"/>
+    <!-- bottom pipe body -->
+    <rect x="${bx}" y="${botY + CAP_H}" width="${bw}" height="${Math.max(0, botH - CAP_H)}" rx="4" fill="url(#pipeGrad)"/>
+    <rect x="${bx + 2}" y="${botY + CAP_H}" width="8" height="${Math.max(0, botH - CAP_H)}" rx="2" fill="rgba(255,255,255,.1)"/>
+  </g>`;
+}
+
+// Redraw all pipes into SVG
+function renderPipes() {
+  pipesG.innerHTML = pipes.map(p => pipeSvg(p.x, p.topH)).join('');
+}
+
+/* ────────────────────────────────
+   GAME LOGIC
+──────────────────────────────── */
+function spawnPipe() {
+  const minH = 55, maxH = GROUND_Y - PIPE_GAP - 55;
+  pipes.push({
+    x: GW + 10,
+    topH: minH + Math.random() * (maxH - minH),
+    scored: false
+  });
+}
+
+function updatePipes() {
+  pipes.forEach(p => {
+    p.x -= speed;
+    if (!p.scored && p.x + PIPE_W < BIRD_X) {
+      p.scored = true;
+      score++;
+      liveScore.textContent = score;
+      playPoint();
+      speed = Math.min(2.2 + score * 0.045, 4.6); // ramp up speed
+    }
+  });
+  pipes = pipes.filter(p => p.x > -PIPE_W - 30);
+  renderPipes();
+}
+
+function isHit() {
+  // Ground or ceiling
+  if (by + BIRD_R > GROUND_Y || by - BIRD_R < 0) return true;
+  // Pipe collision (slightly forgiving radius)
+  for (const p of pipes) {
+    const pl = p.x - CAP_EXTRA;
+    const pr = p.x + PIPE_W + CAP_EXTRA;
+    if (BIRD_X + BIRD_R - 5 > pl && BIRD_X - BIRD_R + 5 < pr) {
+      if (by - BIRD_R < p.topH || by + BIRD_R > p.topH + PIPE_GAP) return true;
+    }
+  }
+  return false;
+}
+
+function moveClouds() {
+  cx1 -= 0.35; if (cx1 < -120) cx1 = GW + 40;
+  cx2 -= 0.25; if (cx2 < -100) cx2 = GW + 40;
+  cx3 -= 0.45; if (cx3 < -80)  cx3 = GW + 40;
+  cloud1.setAttribute('transform', `translate(${cx1},55)`);
+  cloud2.setAttribute('transform', `translate(${cx2},88)`);
+  cloud3.setAttribute('transform', `translate(${cx3},36)`);
+}
+
+/* ────────────────────────────────
+   MAIN GAME LOOP
+──────────────────────────────── */
+function loop() {
+  moveClouds();
+  wingT += 0.2;
+  const wingOffset = Math.sin(wingT) * 12; // wing flap oscillation
+
+  if (state === 'start') {
+    // Idle float animation
+    by   = 270 + Math.sin(Date.now() / 600) * 12;
+    brot = Math.sin(Date.now() / 600) * 6;
+    positionBird(by, brot, wingOffset);
+    raf = requestAnimationFrame(loop);
+    return;
+  }
+
+  if (state === 'playing') {
+    bvy += GRAVITY;
+    by  += bvy;
+    // Rotate: nose down as falling, nose up when flapping
+    brot = Math.max(-25, Math.min(bvy * 4, 72));
+    positionBird(by, brot, wingOffset);
+
+    pipeTimer++;
+    if (pipeTimer > 95) { spawnPipe(); pipeTimer = 0; }
+    updatePipes();
+
+    if (isHit()) { die(); return; }
+  }
+
+  if (state === 'dead') {
+    // Bird tumbles to ground after death
+    if (by + BIRD_R < GROUND_Y) {
+      bvy += GRAVITY * 1.4;
+      by  += bvy;
+      brot = 90;
+    }
+    positionBird(by, brot, 0);
+  }
+
+  raf = requestAnimationFrame(loop);
+}
+
+/* ────────────────────────────────
+   STATE MANAGEMENT
+──────────────────────────────── */
+function die() {
+  state = 'dead';
+  playDead();
+  saveScore(score);
+  renderSB();
+  document.getElementById('finalScore').textContent = score;
+  document.getElementById('finalBest').textContent  = best;
+  document.getElementById('startBest').textContent  = best;
+  // Award medal based on score
+  let m = '🏅';
+  if      (score >= 40) m = '🏆';
+  else if (score >= 20) m = '🥇';
+  else if (score >= 10) m = '🥈';
+  else if (score >= 5)  m = '🥉';
+  document.getElementById('medalEl').textContent = m;
+  setTimeout(() => document.getElementById('gameOverScreen').classList.remove('hidden'), 700);
+  raf = requestAnimationFrame(loop);
+}
+
+function reset() {
+  pipes = []; pipesG.innerHTML = '';
+  by = 270; bvy = 0; brot = 0;
+  score = 0; speed = 2.2; pipeTimer = 0;
+  liveScore.textContent = '0';
+}
+
+function startGame() {
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('gameOverScreen').classList.add('hidden');
+  liveScore.classList.remove('hidden');
+  reset();
+  state = 'playing';
+  if (raf) cancelAnimationFrame(raf);
+  loop();
+}
+
+function restartGame() {
+  document.getElementById('gameOverScreen').classList.add('hidden');
+  liveScore.classList.remove('hidden');
+  reset();
+  state = 'playing';
+}
+
+function handleFlap() {
+  if (state === 'start')  { startGame(); return; }
+  if (state === 'playing') { bvy = FLAP_V; wingT = -Math.PI / 3; playFlap(); }
+  if (state === 'dead' && !document.getElementById('gameOverScreen').classList.contains('hidden')) {
+    restartGame();
+  }
+}
+
+// Keyboard support
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'ArrowUp') { e.preventDefault(); handleFlap(); }
+});
+
+/* ────────────────────────────────
+   SCOREBOARD (localStorage)
+──────────────────────────────── */
+function getScores() {
+  try { return JSON.parse(localStorage.getItem('wingit_scores') || '[]'); } catch (e) { return []; }
+}
+
+function saveScore(s) {
+  if (!s) return;
+  let arr = getScores();
+  arr.push({ score: s, date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) });
+  arr.sort((a, b) => b.score - a.score);
+  arr = arr.slice(0, 10);
+  localStorage.setItem('wingit_scores', JSON.stringify(arr));
+  best = arr[0]?.score || 0;
+}
+
+function renderSB() {
+  const arr = getScores();
+  const body = document.getElementById('sbBody');
+  if (!arr.length) {
+    body.innerHTML = '<div class="no-scores">No scores yet — play to make history! 🐦</div>';
+    return;
+  }
+  best = arr[0]?.score || 0;
+  document.getElementById('startBest').textContent = best;
+  body.innerHTML = arr.map((s, i) => `
+    <div class="sb-row">
+      <span class="sb-rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</span>
+      <span style="font-weight:700">You</span>
+      <span class="sb-score">${s.score}</span>
+      <span class="sb-date">${s.date}</span>
+    </div>`).join('');
+}
+
+function clearScores() {
+  if (confirm('Clear all scores?')) {
+    localStorage.removeItem('wingit_scores');
+    renderSB();
+  }
+}
+
+/* ────────────────────────────────
+   INIT
+──────────────────────────────── */
+renderSB();
+loop(); // starts idle animation
+</script>
+</body>
+</html>
